@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,address=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="x5-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="browsermode" content="application" />
+    <title>宝宝大王的像素告白</title>
+    <style>
+:root {
+  color-scheme: dark;
+  --ink: #fff8df;
+  --paper: #151028;
+  --night: #0d1024;
+  --sky: #4a7eff;
+  --rose: #ff4f8b;
+  --peach: #ffb357;
+  --mint: #4ee5a7;
+  --aqua: #56d7ff;
+  --violet: #8d6bff;
+  --brick: #b9473d;
+  --soil: #6b3b2c;
+  --line: rgba(255, 255, 255, 0.2);
+  font-family: "Trebuchet MS", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  overflow-x: hidden;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, rgba(74, 126, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 18% 14%, rgba(255, 179, 87, 0.28), transparent 28%),
+    radial-gradient(circle at 82% 12%, rgba(86, 215, 255, 0.25), transparent 30%),
+    linear-gradient(135deg, #120f27 0%, #20163b 45%, #0a1834 100%);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+  image-rendering: pixelated;
+}
+
+.shell {
+  width: min(1180px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 34px);
+  display: grid;
+  place-items: center;
+}
+
+.stage-wrap {
+  width: 100%;
+  border: 4px solid #ffe27a;
+  border-radius: 8px;
+  padding: clamp(12px, 2.4vw, 22px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    rgba(11, 13, 31, 0.9);
+  box-shadow:
+    0 0 0 5px #34204a,
+    0 24px 70px rgba(0, 0, 0, 0.5);
+}
+
+.topbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.brand {
+  min-width: 0;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.pixel-heart {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  background: var(--rose);
+  clip-path: polygon(
+    18% 0,
+    36% 0,
+    36% 18%,
+    50% 18%,
+    50% 0,
+    82% 0,
+    82% 18%,
+    100% 18%,
+    100% 54%,
+    82% 54%,
+    82% 72%,
+    64% 72%,
+    64% 90%,
+    50% 90%,
+    50% 100%,
+    36% 100%,
+    36% 90%,
+    18% 90%,
+    18% 72%,
+    0 72%,
+    0 18%,
+    18% 18%
+  );
+  filter: drop-shadow(0 6px 0 #92224e);
+  image-rendering: pixelated;
+}
+
+.kicker {
+  margin: 0 0 3px;
+  color: var(--mint);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 720px;
+  margin: 0;
+  font-size: clamp(1.35rem, 3.2vw, 2.6rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+  text-shadow: 3px 3px 0 #4d2d72;
+}
+
+.scoreboard {
+  min-width: 230px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.scoreboard span {
+  padding: 10px 12px;
+  border: 3px solid #ffe27a;
+  border-radius: 6px;
+  text-align: center;
+  background: #281943;
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.scene-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 330px;
+  border: 4px solid #101326;
+  border-radius: 8px;
+  background: #70b5ff;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+
+#game2d,
+#game3d {
+  position: absolute;
+  inset: 0;
+}
+
+#game3d {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 900ms ease, filter 900ms ease;
+}
+
+.scene-frame.is-3d #game3d {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scene-frame.is-3d #game2d {
+  filter: saturate(0.45) brightness(0.7);
+}
+
+.letter-panel {
+  position: absolute;
+  left: clamp(12px, 3vw, 28px);
+  top: clamp(58px, 8vw, 88px);
+  width: min(520px, calc(100% - 24px));
+  padding: 14px 16px;
+  border: 3px solid #fff1a6;
+  border-radius: 8px;
+  color: #2a1432;
+  background: rgba(255, 248, 223, 0.94);
+  box-shadow: 8px 8px 0 rgba(70, 38, 100, 0.45);
+  pointer-events: none;
+}
+
+.letter-title {
+  margin: 0 0 6px;
+  color: #d72d69;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.letter-panel p:last-child {
+  margin: 0;
+  font-size: clamp(0.95rem, 2.2vw, 1.28rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.toast {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  max-width: min(340px, calc(100% - 36px));
+  padding: 9px 11px;
+  border: 3px solid #101326;
+  border-radius: 6px;
+  color: #101326;
+  font-size: 0.88rem;
+  font-weight: 900;
+  background: #ffe27a;
+  box-shadow: 5px 5px 0 rgba(16, 19, 38, 0.35);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+button {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 3px solid #11142a;
+  border-radius: 8px;
+  color: #18101f;
+  background: #fff8df;
+  box-shadow: 0 6px 0 #30234c;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.pad-btn {
+  width: 54px;
+  flex: 0 0 54px;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  touch-action: none;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #30234c;
+}
+
+.primary {
+  background: var(--mint);
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .scoreboard {
+    min-width: 0;
+  }
+
+  .scene-frame {
+    min-height: 430px;
+    aspect-ratio: 9 / 13;
+  }
+
+  .toast {
+    right: 10px;
+    top: 10px;
+    font-size: 0.78rem;
+  }
+
+  .letter-panel {
+    padding: 11px 12px;
+  }
+
+  button {
+    flex: 1 1 150px;
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="stage-wrap" aria-label="宝宝大王的像素告白游戏">
+        <div class="topbar">
+          <div class="brand">
+            <span class="pixel-heart" aria-hidden="true"></span>
+            <div>
+              <p class="kicker">Pixel Love Quest</p>
+              <h1>宝宝大王，请接收我的告白</h1>
+            </div>
+          </div>
+          <div class="scoreboard" aria-live="polite">
+            <span>爱心 <strong id="heartCount">0</strong>/8</span>
+            <span>甜度 <strong id="sweetness">0%</strong></span>
+          </div>
+        </div>
+
+        <div class="scene-frame">
+          <canvas id="game2d" width="960" height="540" aria-label="2D 像素告白关卡"></canvas>
+          <canvas id="game3d" width="960" height="540" aria-label="通关告白展示"></canvas>
+          <div class="letter-panel" id="letterPanel">
+            <p class="letter-title">给宝宝大王</p>
+            <p id="loveLine">收集爱心，点亮这座像素小城。</p>
+          </div>
+          <div class="toast" id="toast">方向键或 A/D 移动，空格跳跃</div>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="pad-btn" id="leftBtn" aria-label="向左移动">←</button>
+          <button type="button" class="primary pad-btn" id="jumpBtn" aria-label="跳跃">↑</button>
+          <button type="button" class="pad-btn" id="rightBtn" aria-label="向右移动">→</button>
+          <button type="button" id="switchBtn">查看通关告白</button>
+          <button type="button" id="resetBtn">再来一次</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+"use strict";
+
+const canvas2d = document.querySelector("#game2d");
+const canvas3d = document.querySelector("#game3d");
+const frame = document.querySelector(".scene-frame");
+const heartCountEl = document.querySelector("#heartCount");
+const sweetnessEl = document.querySelector("#sweetness");
+const loveLineEl = document.querySelector("#loveLine");
+const toastEl = document.querySelector("#toast");
+const jumpBtn = document.querySelector("#jumpBtn");
+const leftBtn = document.querySelector("#leftBtn");
+const rightBtn = document.querySelector("#rightBtn");
+const switchBtn = document.querySelector("#switchBtn");
+const resetBtn = document.querySelector("#resetBtn");
+const ctx = canvas2d.getContext("2d");
+const ctx3 = canvas3d.getContext("2d");
+
+const W = canvas2d.width;
+const H = canvas2d.height;
+const TILE = 30;
+const GRAVITY = 0.72;
+const WORLD_W = 1680;
+const keys = new Set();
+
+const messages = [
+  "宝宝大王，你一出现，我的像素世界就开始发光。",
+  "想把所有金币都换成花，放在你每天醒来的路上。",
+  "你负责当大王，我负责把每一关都通向你。",
+  "今天的隐藏关卡：认真喜欢你，很久很久。",
+  "这座小城有八颗心，每一颗都写着想你。",
+  "和你在一起，普通日子也会跳出隐藏彩蛋。",
+  "宝宝大王，请允许我长期驻守在你的快乐地图。",
+  "通关奖励：一个超认真、超偏心、超喜欢你的我。"
+];
+
+const state = {
+  mode3d: false,
+  won: false,
+  collected: 0,
+  cameraX: 0,
+  tick: 0,
+  player: createPlayer(),
+  hearts: [],
+  particles: [],
+  fireworks: [],
+  pointerX: 0,
+  pointerY: 0
+};
+
+const platforms = [
+  { x: 0, y: 480, w: 1680, h: 80, type: "ground" },
+  { x: 165, y: 390, w: 150, h: 28, type: "brick" },
+  { x: 390, y: 330, w: 120, h: 28, type: "gold" },
+  { x: 600, y: 410, w: 180, h: 28, type: "brick" },
+  { x: 860, y: 350, w: 135, h: 28, type: "mint" },
+  { x: 1090, y: 292, w: 145, h: 28, type: "gold" },
+  { x: 1300, y: 398, w: 190, h: 28, type: "brick" }
+];
+
+const scenery = [
+  { x: 120, y: 420, kind: "pipe" },
+  { x: 520, y: 438, kind: "flower" },
+  { x: 750, y: 438, kind: "mailbox" },
+  { x: 1010, y: 438, kind: "pipe" },
+  { x: 1470, y: 414, kind: "castle" }
+];
+
+function createPlayer() {
+  return { x: 80, y: 250, w: 26, h: 34, vx: 0, vy: 0, grounded: false, face: 1 };
+}
+
+function resetHearts() {
+  state.hearts = [
+    { x: 205, y: 340, got: false },
+    { x: 440, y: 280, got: false },
+    { x: 650, y: 360, got: false },
+    { x: 755, y: 360, got: false },
+    { x: 910, y: 300, got: false },
+    { x: 1145, y: 242, got: false },
+    { x: 1360, y: 348, got: false },
+    { x: 1500, y: 345, got: false }
+  ];
+}
+
+function resetGame() {
+  state.mode3d = false;
+  state.won = false;
+  state.collected = 0;
+  state.cameraX = 0;
+  state.tick = 0;
+  state.player = createPlayer();
+  state.particles = [];
+  state.fireworks = [];
+  keys.clear();
+  resetHearts();
+  setMode(false);
+  updateHud();
+  loveLineEl.textContent = "收集爱心，点亮这座像素小城。";
+  toastEl.textContent = "方向键或 A/D 移动，空格跳跃";
+}
+
+function setMode(use3d) {
+  state.mode3d = use3d;
+  frame.classList.toggle("is-3d", use3d);
+  switchBtn.textContent = use3d ? "回到 2D 关卡" : "查看通关告白";
+  if (use3d) {
+    loveLineEl.textContent = state.won
+      ? "宝宝大王，恭喜通关。我的最终答案是：我喜欢你。"
+      : "先把 8 颗爱心收齐，再解锁完整告白。";
+    toastEl.textContent = "移动鼠标或手指，可以让告白小城转起来";
+  } else if (!state.won) {
+    toastEl.textContent = "方向键或 A/D 移动，空格跳跃";
+  }
+}
+
+function updateHud() {
+  heartCountEl.textContent = String(state.collected);
+  sweetnessEl.textContent = `${Math.round((state.collected / 8) * 100)}%`;
+}
+
+function rectsOverlap(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function solidCollide(axis) {
+  const p = state.player;
+  for (const platform of platforms) {
+    if (!rectsOverlap(p, platform)) continue;
+    if (axis === "x") {
+      if (p.vx > 0) p.x = platform.x - p.w;
+      if (p.vx < 0) p.x = platform.x + platform.w;
+      p.vx = 0;
+    } else {
+      if (p.vy > 0) {
+        p.y = platform.y - p.h;
+        p.grounded = true;
+      }
+      if (p.vy < 0) p.y = platform.y + platform.h;
+      p.vy = 0;
+    }
+  }
+}
+
+function jump() {
+  if (!state.mode3d && state.player.grounded) {
+    state.player.vy = -14.8;
+    state.player.grounded = false;
+    burst(state.player.x + 13, state.player.y + 32, "#fff1a6", 8);
+  }
+}
+
+function burst(x, y, color, count = 18) {
+  for (let i = 0; i < count; i++) {
+    state.particles.push({
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 7,
+      vy: (Math.random() - 0.9) * 7,
+      life: 28 + Math.random() * 22,
+      color
+    });
+  }
+}
+
+function winGame() {
+  if (state.won) return;
+  state.won = true;
+  toastEl.textContent = "收集完成！正在打开最终告白";
+  for (let i = 0; i < 10; i++) {
+    burst(1460 + Math.random() * 100, 220 + Math.random() * 150, i % 2 ? "#ff4f8b" : "#ffb357", 14);
+  }
+  setTimeout(() => setMode(true), 650);
+}
+
+function update2d() {
+  state.tick++;
+  const p = state.player;
+  const left = keys.has("arrowleft") || keys.has("a") || keys.has("left");
+  const right = keys.has("arrowright") || keys.has("d") || keys.has("right");
+
+  p.vx = 0;
+  if (left) {
+    p.vx = -5.2;
+    p.face = -1;
+  }
+  if (right) {
+    p.vx = 5.2;
+    p.face = 1;
+  }
+
+  p.x += p.vx;
+  solidCollide("x");
+  p.vy += GRAVITY;
+  p.y += p.vy;
+  p.grounded = false;
+  solidCollide("y");
+
+  p.x = Math.max(0, Math.min(WORLD_W - p.w - 72, p.x));
+  if (p.y > H + 80) {
+    p.x = Math.max(80, state.cameraX + 80);
+    p.y = 250;
+    p.vy = 0;
+  }
+
+  state.cameraX += (p.x - 310 - state.cameraX) * 0.08;
+  state.cameraX = Math.max(0, Math.min(720, state.cameraX));
+
+  for (const heart of state.hearts) {
+    if (heart.got) continue;
+    const bob = Math.sin(state.tick * 0.08 + heart.x) * 5;
+    if (rectsOverlap(p, { x: heart.x - 13, y: heart.y - 13 + bob, w: 26, h: 26 })) {
+      heart.got = true;
+      state.collected++;
+      updateHud();
+      loveLineEl.textContent = messages[state.collected - 1];
+      burst(heart.x, heart.y, "#ff4f8b", 24);
+    }
+  }
+
+  if (state.collected === 8 && p.x > 1435) {
+    winGame();
+  } else if (state.collected === 8 && !state.won) {
+    toastEl.textContent = "爱心收齐了，去右边城堡领取通关告白";
+  }
+
+  state.particles = state.particles
+    .map((pt) => ({
+      ...pt,
+      x: pt.x + pt.vx,
+      y: pt.y + pt.vy,
+      vy: pt.vy + 0.18,
+      life: pt.life - 1
+    }))
+    .filter((pt) => pt.life > 0);
+}
+
+function px(x) {
+  return Math.round(x - state.cameraX);
+}
+
+function drawRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+}
+
+function drawPixelHeart(x, y, scale, color = "#ff4f8b", targetCtx = ctx) {
+  const map = [
+    "01100110",
+    "11111111",
+    "11111111",
+    "11111111",
+    "01111110",
+    "00111100",
+    "00011000"
+  ];
+  targetCtx.fillStyle = color;
+  map.forEach((row, ry) => {
+    [...row].forEach((cell, rx) => {
+      if (cell === "1") targetCtx.fillRect(Math.round(x + rx * scale), Math.round(y + ry * scale), scale, scale);
+    });
+  });
+}
+
+function drawPlayer() {
+  const p = state.player;
+  const x = px(p.x);
+  const y = Math.round(p.y);
+  const step = p.grounded ? Math.floor(state.tick / 8) % 2 : 1;
+  drawRect(x + 4, y, 18, 8, "#ffcf6b");
+  drawRect(x + 2, y + 8, 22, 18, "#ff4f8b");
+  drawRect(x + 6, y + 26, 6, 8 + step * 2, "#34204a");
+  drawRect(x + 16, y + 26, 6, 10 - step * 2, "#34204a");
+  drawRect(x + (p.face > 0 ? 17 : 5), y + 4, 4, 4, "#25112c");
+  drawPixelHeart(x + 8, y + 13, 2, "#fff8df");
+}
+
+function drawPlatform(platform) {
+  const x = px(platform.x);
+  const { y, w, h, type } = platform;
+  const colors = {
+    ground: ["#6b3b2c", "#9a5a3d", "#4ee5a7"],
+    brick: ["#9d342f", "#c94d3f", "#ffb357"],
+    gold: ["#cf802b", "#ffb357", "#fff1a6"],
+    mint: ["#258f70", "#4ee5a7", "#fff1a6"]
+  }[type];
+  drawRect(x, y, w, h, colors[0]);
+  drawRect(x, y, w, 7, colors[1]);
+  for (let bx = 0; bx < w; bx += TILE) {
+    drawRect(x + bx + 2, y + 3, TILE - 4, 4, colors[2]);
+    if (type !== "ground") drawRect(x + bx, y + 13, 2, h - 13, "rgba(0,0,0,0.22)");
+  }
+  if (type === "ground") {
+    for (let gx = 0; gx < w; gx += 18) {
+      drawRect(x + gx, y + 2, 12, 5, colors[2]);
+    }
+  }
+}
+
+function drawScenery(item) {
+  const x = px(item.x);
+  if (item.kind === "pipe") {
+    drawRect(x, item.y, 56, 60, "#248a5c");
+    drawRect(x - 8, item.y - 14, 72, 18, "#4ee5a7");
+    drawRect(x + 10, item.y, 8, 60, "rgba(255,255,255,0.18)");
+  }
+  if (item.kind === "flower") {
+    drawRect(x + 18, item.y - 42, 6, 42, "#2db572");
+    drawPixelHeart(x, item.y - 70, 4, "#ff4f8b");
+  }
+  if (item.kind === "mailbox") {
+    drawRect(x, item.y - 48, 52, 48, "#ffb357");
+    drawRect(x + 6, item.y - 38, 40, 20, "#fff8df");
+    drawRect(x + 36, item.y - 58, 8, 20, "#ff4f8b");
+  }
+  if (item.kind === "castle") {
+    drawRect(x, item.y - 86, 116, 86, "#8d6bff");
+    drawRect(x + 14, item.y - 124, 28, 38, "#8d6bff");
+    drawRect(x + 74, item.y - 124, 28, 38, "#8d6bff");
+    drawRect(x + 35, item.y - 42, 46, 42, "#34204a");
+    drawPixelHeart(x + 42, item.y - 78, 4, state.collected === 8 ? "#fff1a6" : "#fff8df");
+  }
+}
+
+function drawSky() {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#72c7ff");
+  sky.addColorStop(0.6, "#91d9ff");
+  sky.addColorStop(1, "#ffe3a3");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 42; i++) {
+    const x = ((i * 137 - state.cameraX * 0.22) % (W + 80)) - 40;
+    const y = 38 + ((i * 53) % 210);
+    const size = 3 + (i % 3) * 2;
+    drawRect(x, y, size, size, i % 2 ? "#fff8df" : "#fff1a6");
+  }
+
+  for (let c = 0; c < 5; c++) {
+    const x = ((c * 250 + 100 - state.cameraX * 0.35) % 1160) - 100;
+    const y = 70 + c * 34;
+    drawRect(x, y, 82, 22, "rgba(255,255,255,0.9)");
+    drawRect(x + 22, y - 18, 54, 18, "rgba(255,255,255,0.9)");
+    drawRect(x + 54, y + 18, 42, 12, "rgba(255,255,255,0.9)");
+  }
+}
+
+function draw2d() {
+  drawSky();
+  scenery.forEach(drawScenery);
+  platforms.forEach(drawPlatform);
+
+  for (const heart of state.hearts) {
+    if (heart.got) continue;
+    const bob = Math.sin(state.tick * 0.08 + heart.x) * 5;
+    drawPixelHeart(px(heart.x - 14), heart.y - 13 + bob, 4, "#ff4f8b");
+    drawPixelHeart(px(heart.x - 6), heart.y - 6 + bob, 2, "#fff8df");
+  }
+
+  for (const pt of state.particles) {
+    drawRect(px(pt.x), pt.y, 5, 5, pt.color);
+  }
+
+  drawPlayer();
+}
+
+function isoPoint(x, y, z, rot) {
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
+  const rx = x * cos - z * sin;
+  const rz = x * sin + z * cos;
+  return {
+    x: W / 2 + (rx - rz) * 34,
+    y: 345 + (rx + rz) * 12 - y * 42
+  };
+}
+
+function drawIsoBlock(x, y, z, sx, sy, sz, color, rot) {
+  const p = isoPoint(x, y, z, rot);
+  const width = sx * 62;
+  const depth = sz * 38;
+  const height = sy * 42;
+  ctx3.fillStyle = shade(color, 1.12);
+  ctx3.beginPath();
+  ctx3.moveTo(p.x, p.y - height);
+  ctx3.lineTo(p.x + width / 2, p.y - height + depth / 2);
+  ctx3.lineTo(p.x, p.y - height + depth);
+  ctx3.lineTo(p.x - width / 2, p.y - height + depth / 2);
+  ctx3.closePath();
+  ctx3.fill();
+  ctx3.fillStyle = shade(color, 0.82);
+  ctx3.beginPath();
+  ctx3.moveTo(p.x - width / 2, p.y - height + depth / 2);
+  ctx3.lineTo(p.x, p.y - height + depth);
+  ctx3.lineTo(p.x, p.y + depth);
+  ctx3.lineTo(p.x - width / 2, p.y + depth / 2);
+  ctx3.closePath();
+  ctx3.fill();
+  ctx3.fillStyle = shade(color, 0.96);
+  ctx3.beginPath();
+  ctx3.moveTo(p.x + width / 2, p.y - height + depth / 2);
+  ctx3.lineTo(p.x, p.y - height + depth);
+  ctx3.lineTo(p.x, p.y + depth);
+  ctx3.lineTo(p.x + width / 2, p.y + depth / 2);
+  ctx3.closePath();
+  ctx3.fill();
+}
+
+function shade(hex, factor) {
+  const n = Number.parseInt(hex.slice(1), 16);
+  const r = Math.min(255, Math.round(((n >> 16) & 255) * factor));
+  const g = Math.min(255, Math.round(((n >> 8) & 255) * factor));
+  const b = Math.min(255, Math.round((n & 255) * factor));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function draw3dHeart(x, y, z, scale, rot, color) {
+  const p = isoPoint(x, y, z, rot);
+  ctx3.save();
+  ctx3.translate(p.x, p.y);
+  ctx3.scale(scale, scale);
+  drawPixelHeart(-16, -16, 4, color, ctx3);
+  ctx3.restore();
+}
+
+function draw3d() {
+  const t = state.tick * 0.016;
+  const rot = t * 0.45 + state.pointerX * 0.8;
+  const tilt = state.pointerY * 18;
+  const bg = ctx3.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#170f31");
+  bg.addColorStop(0.55, "#2f235d");
+  bg.addColorStop(1, "#101326");
+  ctx3.fillStyle = bg;
+  ctx3.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 70; i++) {
+    ctx3.fillStyle = i % 3 ? "#fff8df" : "#56d7ff";
+    const x = (i * 127 + Math.sin(t + i) * 18) % W;
+    const y = 24 + ((i * 71) % 260);
+    ctx3.fillRect(x, y, 3 + (i % 2), 3 + (i % 2));
+  }
+
+  ctx3.save();
+  ctx3.translate(0, tilt);
+  drawIsoBlock(0, -0.4, 0, 6.8, 0.5, 4.4, "#3d2a68", rot);
+  for (let x = -3; x <= 3; x++) {
+    for (let z = -2; z <= 2; z++) {
+      if ((x + z) % 2 === 0) drawIsoBlock(x, 0.05, z, 0.64, 0.12, 0.64, "#574098", rot);
+    }
+  }
+
+  drawIsoBlock(-2.2, 0.1, 0.1, 0.7, 2.3, 0.7, "#8d6bff", rot);
+  drawIsoBlock(2.2, 0.1, 0.1, 0.7, 2.3, 0.7, "#8d6bff", rot);
+  drawIsoBlock(0, 0, 0.1, 2.8, 2.0, 0.8, "#6750c8", rot);
+  drawIsoBlock(0, 2.1, 0.1, 3.4, 0.45, 0.95, "#ffb357", rot);
+  drawIsoBlock(0, 2.75, 0.1, 2.2, 0.55, 0.75, "#4ee5a7", rot);
+  draw3dHeart(0, 4.0 + Math.sin(t * 2) * 0.12, 0.4, 0.9, rot, "#ff4f8b");
+
+  for (let i = 0; i < 14; i++) {
+    const angle = (i / 14) * Math.PI * 2 + t * 0.7;
+    draw3dHeart(Math.cos(angle) * 3.2, 1.4 + Math.sin(t * 2 + i) * 0.35, Math.sin(angle) * 2.1, 0.32, rot, i % 2 ? "#ffb357" : "#ff4f8b");
+  }
+  ctx3.restore();
+
+  ctx3.textAlign = "center";
+  ctx3.textBaseline = "middle";
+  ctx3.lineWidth = 10;
+  ctx3.font = "900 46px Microsoft YaHei, SimHei, sans-serif";
+  ctx3.strokeStyle = "#4b245e";
+  ctx3.fillStyle = "#fff8df";
+  ctx3.strokeText(state.won ? "宝宝大王，我喜欢你" : "收齐 8 颗爱心解锁告白", W / 2, 92);
+  ctx3.fillText(state.won ? "宝宝大王，我喜欢你" : "收齐 8 颗爱心解锁告白", W / 2, 92);
+  ctx3.font = "800 25px Microsoft YaHei, SimHei, sans-serif";
+  ctx3.strokeText(state.won ? "从 2D 小心动，到整个世界都发光" : "先回到关卡继续冒险吧", W / 2, 145);
+  ctx3.fillStyle = "#56d7ff";
+  ctx3.fillText(state.won ? "从 2D 小心动，到整个世界都发光" : "先回到关卡继续冒险吧", W / 2, 145);
+}
+
+function loop() {
+  if (!state.mode3d) update2d();
+  else state.tick++;
+  draw2d();
+  draw3d();
+  requestAnimationFrame(loop);
+}
+
+function pressVirtual(key, isDown) {
+  if (isDown) keys.add(key);
+  else keys.delete(key);
+}
+
+function bindHoldButton(button, key, onTap) {
+  const down = (event) => {
+    event.preventDefault();
+    pressVirtual(key, true);
+    if (onTap) onTap();
+    button.setPointerCapture?.(event.pointerId);
+  };
+  const up = (event) => {
+    event.preventDefault();
+    pressVirtual(key, false);
+  };
+  button.addEventListener("pointerdown", down);
+  button.addEventListener("pointerup", up);
+  button.addEventListener("pointercancel", up);
+  button.addEventListener("pointerleave", up);
+}
+
+window.addEventListener("keydown", (event) => {
+  const key = event.key.toLowerCase();
+  keys.add(key);
+  if (event.key === " " || event.key === "ArrowUp" || key === "w") {
+    event.preventDefault();
+    jump();
+  }
+});
+
+window.addEventListener("keyup", (event) => {
+  keys.delete(event.key.toLowerCase());
+});
+
+document.addEventListener("touchmove", (event) => {
+  if (event.target.closest(".stage-wrap")) event.preventDefault();
+}, { passive: false });
+
+frame.addEventListener("pointermove", (event) => {
+  const rect = frame.getBoundingClientRect();
+  state.pointerX = (event.clientX - rect.left) / rect.width - 0.5;
+  state.pointerY = (event.clientY - rect.top) / rect.height - 0.5;
+});
+
+bindHoldButton(leftBtn, "left");
+bindHoldButton(rightBtn, "right");
+bindHoldButton(jumpBtn, "jump", jump);
+switchBtn.addEventListener("click", () => setMode(!state.mode3d));
+resetBtn.addEventListener("click", resetGame);
+
+resetGame();
+loop();
+
+</script>
+  </body>
+</html>
